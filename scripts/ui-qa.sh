@@ -30,6 +30,13 @@ if printf '%s' "$GEOMETRY" | rg -q 'stable[^,]*false'; then
   exit 1
 fi
 
+HIERARCHY=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify({toolbarVisible:getComputedStyle(document.querySelector('.toolbar')).display!=='none',profileEyebrowVisible:getComputedStyle(document.querySelector('.editor-head .kicker')).display!=='none',setupActionsInSidebar:document.querySelector('.sidebar .setup-actions')!==null})")
+printf '%s\n' "$HIERARCHY" | tee output/playwright/hierarchy-metrics.json
+if printf '%s' "$HIERARCHY" | rg -q 'toolbarVisible[^,]*true|profileEyebrowVisible[^,]*true|setupActionsInSidebar[^,]*false'; then
+  echo "UI QA failed: secondary workflow controls are competing with the mouse" >&2
+  exit 1
+fi
+
 if printf '%s' "$METRICS" | rg -q 'bodyOverflow[^,]*true|sidebarOverflow[^,]*true|cycleNoteVisible[^,]*true'; then
   echo "UI QA failed: overflow or redundant cycle note detected" >&2
   exit 1
