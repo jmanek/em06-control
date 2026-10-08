@@ -8,6 +8,10 @@ PWCLI="${PWCLI:-/Users/jessemanek/.codex/skills/playwright/scripts/playwright_cl
 SESSION="em06-ui-qa"
 mkdir -p output/playwright
 
+for marker in 'CAPTURE_IDLE_MS=5000' 'CAPTURE_MAX_MS=30000' 'Recording stopped before device operation'; do
+  rg -q "$marker" web/app.js || { echo "UI QA failed: recording lifecycle marker missing: $marker" >&2; exit 1; }
+done
+
 python3 -m http.server 4173 --directory . > output/playwright/server.log 2>&1 &
 SERVER_PID=$!
 trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
