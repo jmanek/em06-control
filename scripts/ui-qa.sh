@@ -5,7 +5,7 @@ set -euo pipefail
 # reviewed visually after this script passes; the script catches measurable issues.
 command -v npx >/dev/null 2>&1 || { echo "npx is required for UI QA" >&2; exit 1; }
 PWCLI="${PWCLI:-/Users/jessemanek/.codex/skills/playwright/scripts/playwright_cli.sh}"
-SESSION="em06-ui-qa"
+SESSION="${PW_SESSION:-em06-ui-qa}"
 mkdir -p output/playwright
 
 for marker in 'CAPTURE_IDLE_MS=5000' 'CAPTURE_MAX_MS=30000' 'Recording stopped before device operation'; do
@@ -20,8 +20,12 @@ bash "$PWCLI" --session "$SESSION" close >/dev/null 2>&1 || true
 bash "$PWCLI" --session "$SESSION" open http://127.0.0.1:4173/web/
 bash "$PWCLI" --session "$SESSION" resize 1440 1000
 
-METRICS=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const q=s=>document.querySelector(s);const r=e=>e?.getBoundingClientRect();const map=r(q('.mouse-map'));const image=r(q('.mouse-map img'));const sidebar=r(q('.sidebar'));const header=r(q('.side-head'));return {bodyOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,sidebarOverflow:header?.scrollWidth>header?.clientWidth,profileHeader:q('.side-head>span')?.textContent.trim(),mouseMapHeight:Math.round(map?.height||0),mouseImageHeight:Math.round(image?.height||0),cycleHeading:q('.cycle-panel h2')?.textContent.trim(),cycleNoteVisible:!!q('.cycle-note')&&getComputedStyle(q('.cycle-note')).display!=='none',sidebarWidth:Math.round(sidebar?.width||0)}})())")
+METRICS=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const q=s=>document.querySelector(s);const r=e=>e?.getBoundingClientRect();const map=r(q('.mouse-map'));const image=r(q('.mouse-map img'));const sidebar=r(q('.sidebar'));const header=r(q('.side-head'));const from=r(q('#copySource'));const to=r(q('#copyTarget'));const copyButton=r(q('#copyProfile'));return {bodyOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,sidebarOverflow:header?.scrollWidth>header?.clientWidth,profileHeader:q('.side-head>span')?.textContent.trim(),mouseMapHeight:Math.round(map?.height||0),mouseImageHeight:Math.round(image?.height||0),cycleHeading:q('.cycle-panel h2')?.textContent.trim(),cycleNoteVisible:!!q('.cycle-note')&&getComputedStyle(q('.cycle-note')).display!=='none',sidebarWidth:Math.round(sidebar?.width||0),copyFieldsAligned:Math.abs((from?.getBoundingClientRect().top||0)-(to?.getBoundingClientRect().top||0))<1&&Math.abs((from?.getBoundingClientRect().height||0)-(to?.getBoundingClientRect().height||0))<1,copyButtonHeight:Math.round(copyButton?.getBoundingClientRect().height||0)}})())")
 printf '%s\n' "$METRICS" | tee output/playwright/desktop-metrics.json
+if printf '%s' "$METRICS" | rg -q 'copyFieldsAligned[^t]*false'; then
+  echo "UI QA failed: duplicate-profile fields are not aligned" >&2
+  exit 1
+fi
 
 GEOMETRY=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const map=document.querySelector('.mouse-map');const inspector=document.querySelector('.inspector');const before=map.getBoundingClientRect().height;const old=inspector.style.minHeight;inspector.style.minHeight='1200px';const after=map.getBoundingClientRect().height;inspector.style.minHeight=old;return {before,after,stable:before===after}})())")
 printf '%s\n' "$GEOMETRY" | tee output/playwright/geometry-metrics.json
