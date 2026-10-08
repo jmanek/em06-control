@@ -54,3 +54,4 @@ $('connect').onclick=connect;$('readAll').onclick=readAll;$('readProfile').oncli
 $('cycle').onclick=switchToProfile;$('profileTarget').onchange=()=>{state.profileTarget=Number($('profileTarget').value)};
 $('cycle').onclick=switchToProfile;$('profileTarget').onchange=()=>{state.profileTarget=Number($('profileTarget').value)};
 $('copySource').onchange=()=>{};$('copyTarget').onchange=()=>{};$('copyProfile').onclick=copyProfile;
+const renderBase=render;render=()=>{renderBase();const item=profile();$('sideDpiValue').textContent=!item.loaded?'Not loaded':keySummary(item.keys[5],item,5)};render();
