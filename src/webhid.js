@@ -28,10 +28,14 @@ export class WebHidTransport {
 
   static async request() {
     if (!globalThis.navigator?.hid) throw new Error('WebHID is unavailable; use Chrome or Edge');
-    let devices = (await navigator.hid.getDevices()).filter((d) => d.vendorId === 0x260d && d.productId === 0x1326);
-    if (devices.length === 0) devices = await navigator.hid.requestDevice({ filters: [{ vendorId: 0x260d, productId: 0x1326 }] });
-    const device = devices[0];
-    if (!device) throw new Error('No ProtoArc EM06 was selected in the HID chooser');
+    const protoArc = (device) => device.vendorId === 0x260d;
+    let devices = (await navigator.hid.getDevices()).filter(protoArc);
+    if (devices.length === 0) devices = await navigator.hid.requestDevice({ filters: [{ vendorId: 0x260d }] });
+    const device = devices.find(protoArc);
+    if (!device) throw new Error('No ProtoArc device was selected in the HID chooser');
+    if (device.productId !== 0x1326 && !/em06/i.test(device.productName || '')) {
+      throw new Error(`Selected ProtoArc device is not recognized as an EM06 (${device.productName || `PID 0x${device.productId.toString(16)}`})`);
+    }
     return new WebHidTransport(device);
   }
 
