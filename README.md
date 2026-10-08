@@ -2,6 +2,8 @@
 
 Profile and key remapping software for the ProtoArc EM06 trackball mouse.
 
+Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
+
 ## What it can do
 
 - Read all four mouse profiles.
