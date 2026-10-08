@@ -23,6 +23,13 @@ bash "$PWCLI" --session "$SESSION" resize 1440 1000
 METRICS=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const q=s=>document.querySelector(s);const r=e=>e?.getBoundingClientRect();const map=r(q('.mouse-map'));const image=r(q('.mouse-map img'));const sidebar=r(q('.sidebar'));const header=r(q('.side-head'));return {bodyOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,sidebarOverflow:header?.scrollWidth>header?.clientWidth,profileHeader:q('.side-head>span')?.textContent.trim(),mouseMapHeight:Math.round(map?.height||0),mouseImageHeight:Math.round(image?.height||0),cycleHeading:q('.cycle-panel h2')?.textContent.trim(),cycleNoteVisible:!!q('.cycle-note')&&getComputedStyle(q('.cycle-note')).display!=='none',sidebarWidth:Math.round(sidebar?.width||0)}})())")
 printf '%s\n' "$METRICS" | tee output/playwright/desktop-metrics.json
 
+GEOMETRY=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const map=document.querySelector('.mouse-map');const inspector=document.querySelector('.inspector');const before=map.getBoundingClientRect().height;const old=inspector.style.minHeight;inspector.style.minHeight='1200px';const after=map.getBoundingClientRect().height;inspector.style.minHeight=old;return {before,after,stable:before===after}})())")
+printf '%s\n' "$GEOMETRY" | tee output/playwright/geometry-metrics.json
+if printf '%s' "$GEOMETRY" | rg -q 'stable[^,]*false'; then
+  echo "UI QA failed: mouse canvas changes height with a taller editor" >&2
+  exit 1
+fi
+
 if printf '%s' "$METRICS" | rg -q 'bodyOverflow[^,]*true|sidebarOverflow[^,]*true|cycleNoteVisible[^,]*true'; then
   echo "UI QA failed: overflow or redundant cycle note detected" >&2
   exit 1
