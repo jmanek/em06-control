@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { Em06Hub, EM06, Em06MouseCodec, MockTransport, ProfileStore, ReportCapture, UnlearnedCodec, em06Checksum, em06DecodeMacroName, em06DecodeShortcutRecord, em06FlashChecksum, em06GetFirmwareVersion, em06KeyRecord, em06MacroNameRecord, em06ProfileCycleKey, em06ReadFlash, em06SelectProfile, em06ShortcutRecord } from '../src/em06.js';
 import { Em06Mouse, WebHidTransport } from '../src/webhid.js';
 import { Em06SimulatorTransport } from '../src/simulator.js';
+import { CURRENT_SETUP_VERSION, parseSetup, serializeSetup } from '../src/setup-format.js';
 
 test('profile cycle is exactly 0 -> 1 -> 2 -> 3 -> 0', () => {
   const store = new ProfileStore();
@@ -21,6 +22,33 @@ test('capture export/import preserves raw report bytes', () => {
   const capture = new ReportCapture();
   capture.record('out', 5, Uint8Array.from([0, 1, 255]));
   assert.deepEqual(ReportCapture.import(capture.export()).events, capture.events);
+});
+
+test('setup exports are canonical and preserve macros', () => {
+  const profiles = Array.from({ length: 4 }, (_, index) => ({
+    keys: Array.from({ length: 8 }, (_, key) => ({ type: key === 2 ? 5 : 0, param: key })),
+    shortcuts: Array.from({ length: 8 }, (_, key) => key === 2 ? [{ type: 0, value: 1 }, { type: 1, value: 6 }] : null),
+    macros: { 3: `Profile ${index + 1}` },
+  }));
+  const text = serializeSetup(profiles);
+  assert.equal(JSON.parse(text).version, CURRENT_SETUP_VERSION);
+  assert.deepEqual(parseSetup(text), profiles);
+});
+
+test('setup importer migrates v1 and v2 and rejects future versions', () => {
+  const keys = Array.from({ length: 8 }, (_, key) => ({ type: 0, param: key }));
+  const v1 = { format: 'em06-hub-setup', version: 1, profiles: Array.from({ length: 4 }, () => ({ keys })) };
+  const v2 = { format: 'em06-hub-setup', version: 2, profiles: Array.from({ length: 4 }, () => ({ keys, shortcuts: Array(8).fill(null) })) };
+  assert.equal(parseSetup(v1)[0].shortcuts.length, 8);
+  assert.deepEqual(parseSetup(v2)[0].macros, {});
+  assert.throws(() => parseSetup({ format: 'em06-hub-setup', version: CURRENT_SETUP_VERSION + 1, profiles: [] }), /newer than this app supports/);
+});
+
+test('setup importer rejects malformed current files instead of guessing', () => {
+  assert.throws(() => parseSetup({ format: 'em06-hub-setup', version: CURRENT_SETUP_VERSION, profiles: [] }), /exactly 4 profiles/);
+  const profiles = Array.from({ length: 4 }, () => ({ keys: Array(8).fill({ type: 0, param: 0 }), shortcuts: Array(8).fill(null), macros: {} }));
+  profiles[0].keys[0] = { type: 0, param: 70000 };
+  assert.throws(() => parseSetup({ format: 'em06-hub-setup', version: CURRENT_SETUP_VERSION, profiles }), /must be an integer from 0 to 65535/);
 });
 
 test('unlearned codec refuses writes', async () => {

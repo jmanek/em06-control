@@ -16,6 +16,7 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 - Set a key to cycle through profiles: 1 → 2 → 3 → 4 → 1.
 - Read and assign existing macro slots.
 - Read the connected mouse firmware version and link to ProtoArc Hub for updates.
+- Export and import versioned setup files with automatic migration for older formats.
 
 The profile-cycle helper can use any mouse button.
 
@@ -48,3 +49,10 @@ npm test
 ## Safety
 
 Reading does not write anything to the mouse. Profile reads and writes restore the profile that was active before the operation. Writing requires an explicit action in the app.
+
+## Setup file compatibility
+
+Setup exports use the `em06-hub-setup` format and a schema version. The app
+keeps explicit migrations for older versions, validates imported data before
+using it, and preserves macro names. Unknown newer versions are rejected
+safely instead of being guessed or partially applied.
