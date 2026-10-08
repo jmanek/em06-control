@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Em06Hub, EM06, Em06MouseCodec, MockTransport, ProfileStore, ReportCapture, UnlearnedCodec, em06Checksum, em06DecodeMacroName, em06DecodeShortcutRecord, em06FlashChecksum, em06KeyRecord, em06MacroNameRecord, em06ProfileCycleKey, em06ReadFlash, em06SelectProfile, em06ShortcutRecord } from '../src/em06.js';
+import { Em06Hub, EM06, Em06MouseCodec, MockTransport, ProfileStore, ReportCapture, UnlearnedCodec, em06Checksum, em06DecodeMacroName, em06DecodeShortcutRecord, em06FlashChecksum, em06GetFirmwareVersion, em06KeyRecord, em06MacroNameRecord, em06ProfileCycleKey, em06ReadFlash, em06SelectProfile, em06ShortcutRecord } from '../src/em06.js';
 import { Em06Mouse, WebHidTransport } from '../src/webhid.js';
 import { Em06SimulatorTransport } from '../src/simulator.js';
 
@@ -39,6 +39,12 @@ test('EM06 command frames use report 8 and an adjusted checksum', () => {
   assert.equal(frame[15] !== 0, true);
   assert.equal(frame[15 - 0], frame[15]);
   assert.equal(frame[15] !== EM06.initialTail, true);
+});
+
+test('EM06 firmware version request uses the Hub version command', () => {
+  const frame = em06GetFirmwareVersion();
+  assert.deepEqual([...frame.slice(0, 5)], [EM06.commands.readVersionId, 0, 0, 0, 0]);
+  assert.equal(frame[15], em06Checksum(frame));
 });
 
 test('EM06 flash reads encode big-endian address and length', () => {

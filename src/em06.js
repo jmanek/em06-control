@@ -114,6 +114,7 @@ export const EM06 = Object.freeze({
     readFlash: 8,
     getCurrentProfile: 14,
     setCurrentProfile: 15,
+    readVersionId: 18,
   }),
   mouseFlash: Object.freeze({
     reportRate: 0,
@@ -167,6 +168,10 @@ export function em06SelectProfile(profile) {
 
 export function em06GetCurrentProfile() {
   return em06Command(EM06.commands.getCurrentProfile);
+}
+
+export function em06GetFirmwareVersion() {
+  return em06Command(EM06.commands.readVersionId);
 }
 
 export function em06IdentifyPayload(bytes = Uint8Array.from([0x31, 0x73, 0xa5, 0xc7])) {

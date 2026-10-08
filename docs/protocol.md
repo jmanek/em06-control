@@ -25,6 +25,12 @@ checksum before every send. The `0xef` value is not transmitted.
 | `0x08` | Read flash |
 | `0x0e` | Get current profile |
 | `0x0f` | Set current profile |
+| `0x12` | Read device firmware version |
+
+The Hub's `ReadVersionID` command returns the device version in response bytes
+`5..6`, displayed as `v<major>.<minor in hexadecimal>` (for example, `v1.0a`).
+The app reads and displays that value but does not claim update availability or
+perform firmware writes; ProtoArc Hub remains the update authority.
 
 ## Mouse flash layout
 

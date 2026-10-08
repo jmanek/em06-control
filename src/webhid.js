@@ -4,6 +4,7 @@ import {
   em06ReadFlash,
   em06IdentifyPayload,
   em06GetCurrentProfile,
+  em06GetFirmwareVersion,
   em06SelectProfile,
   em06WriteFlash,
   normalizeProfile,
@@ -101,6 +102,14 @@ export class Em06Mouse {
     if (!response || response[0] !== EM06.commands.getCurrentProfile) throw new Error('unexpected EM06 current-profile response');
     this.profile = normalizeProfile(response[5]);
     return this.profile;
+  }
+
+  async firmwareVersion() {
+    const response = await this.transport.send(em06GetFirmwareVersion(), {
+      matcher: (data) => data[0] === EM06.commands.readVersionId,
+    });
+    if (!response || response[0] !== EM06.commands.readVersionId) throw new Error('unexpected EM06 firmware response');
+    return { major: response[5], minor: response[6], version: `v${response[5]}.${response[6].toString(16).padStart(2, '0')}` };
   }
 
   async cycleProfile() { await this.selectProfile((this.profile + 1) % 4); return this.profile; }

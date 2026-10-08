@@ -15,6 +15,7 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 - Record custom key combinations.
 - Set a key to cycle through profiles: 1 → 2 → 3 → 4 → 1.
 - Read and assign existing macro slots.
+- Read the connected mouse firmware version and link to ProtoArc Hub for updates.
 
 The profile-cycle helper can use any mouse button.
 
