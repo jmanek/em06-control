@@ -55,3 +55,9 @@ $('cycle').onclick=switchToProfile;$('profileTarget').onchange=()=>{state.profil
 $('cycle').onclick=switchToProfile;$('profileTarget').onchange=()=>{state.profileTarget=Number($('profileTarget').value)};
 $('copySource').onchange=()=>{};$('copyTarget').onchange=()=>{};$('copyProfile').onclick=copyProfile;
 const renderBase=render;render=()=>{renderBase();const item=profile();$('sideDpiValue').textContent=!item.loaded?'Not loaded':keySummary(item.keys[5],item,5)};render();
+state.cycleSnapshot=null;
+function cycleMappingReady(){return Array.isArray(state.cycleSnapshot)&&state.profiles.every((item,index)=>item.loaded&&JSON.stringify(item.keys)===JSON.stringify(state.cycleSnapshot[index]))}
+const prepareCycleBase=prepareCycle;prepareCycle=()=>{prepareCycleBase();state.cycleSnapshot=state.profiles.map(item=>clone(item.keys));render()};
+async function writeCycleMapping(){if(!cycleMappingReady())return setStatus('Prepare the cycle mapping before writing it','error');setBusy(true);setStatus('Writing profile cycle mapping…');try{await writeAll();state.cycleSnapshot=null;setStatus('Profile cycle mapping written','success')}catch(error){setStatus(`Cycle mapping write failed · ${error.message}`,'error')}finally{setBusy(false);render()}}
+const renderWithCycle=render;render=()=>{renderWithCycle();$('writeAll').textContent='Write cycle mapping';$('writeAll').disabled=!state.mouse||state.busy||!cycleMappingReady();const profileCount=document.querySelector('.side-head>span');if(profileCount)profileCount.textContent='Profiles · 4 onboard';const cyclePanel=document.querySelector('.cycle-panel');if(cyclePanel&&!cyclePanel.querySelector('.cycle-note')){const note=document.createElement('small');note.className='cycle-note';note.textContent='Prepares this key across all four profiles.';cyclePanel.insertBefore(note,$('cycleKey').parentElement)}};
+$('setCycleAll').onclick=prepareCycle;$('writeAll').onclick=writeCycleMapping;render();
