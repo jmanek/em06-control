@@ -1,0 +1,8 @@
+{
+  "name": "em06-hub-reimplementation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
