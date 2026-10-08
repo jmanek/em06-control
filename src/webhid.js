@@ -27,7 +27,7 @@ export class WebHidTransport {
   }
 
   static async request() {
-    if (!globalThis.navigator?.hid) throw new Error('WebHID is unavailable; use Chrome or Edge');
+    if (!globalThis.navigator?.hid) throw new Error('WebHID is unavailable; use Chrome, Edge, or Brave');
     const protoArc = (device) => device.vendorId === 0x260d;
     let devices = (await navigator.hid.getDevices()).filter(protoArc);
     if (devices.length === 0) devices = await navigator.hid.requestDevice({ filters: [{ vendorId: 0x260d }] });
