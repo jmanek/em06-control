@@ -28,8 +28,9 @@ jobs:
       - name: Prepare site
         run: |
           mkdir _site
-          cp -R web/. _site/
+          cp -R web _site/web
           cp -R src _site/src
+          printf '%s\n' '<!doctype html><meta http-equiv="refresh" content="0; url=web/"><a href="web/">Open EM06 Control</a>' > _site/index.html
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
