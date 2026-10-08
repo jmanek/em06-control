@@ -16,7 +16,7 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 - Set a key to cycle through profiles: 1 → 2 → 3 → 4 → 1.
 - Read and assign existing macro slots.
 
-The profile-cycle helper can use any mouse button. The center-lower button is not special or hardcoded.
+The profile-cycle helper can use any mouse button.
 
 ## Status
 

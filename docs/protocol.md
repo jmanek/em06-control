@@ -31,7 +31,7 @@ checksum before every send. The `0xef` value is not transmitted.
 - Key records: offset `96`, four bytes per slot. The EM06 Hub uses sparse physical
   slots `0, 1, 2, 4, 3, 5, 11, 8` for its eight displayed controls; slot `5`
   is the side DPI control, slot `8` is the top-right Drag Scroll control, and
-  slot `11` is the center-lower control.
+  slot `11` is the extra programmable control.
 - Shortcut records: offset `256`, 32 bytes per slot; the shortcut slot is the
   same sparse physical slot as its key record
 - Macro records: offset `768`, 384 bytes per slot
@@ -41,7 +41,7 @@ Key record encoding is `[type, parameter >> 8, parameter & 255, checksum]`,
 where the local checksum is `0x55 - sum(first three bytes)`. The Hub defines
 function type `9` as `ProfileSwitch`. The parameter is the target profile, so a
 cycle key is written per profile with targets `1`, `2`, `3`, and `0`.
-On the EM06, the middle-lower/extra Button 7 is displayed at index 6 and stored at raw slot 11.
+The extra Button 7 is displayed at index 6 and stored at raw slot 11.
 
 The Hub writes flash in chunks of at most 10 bytes and waits for the matching
 input report before sending the next chunk. The simulator and WebHID transport
