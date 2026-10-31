@@ -52,7 +52,7 @@ export function parseNamedCombo(text) {
   for (const part of text.split('+')) {
     const name = part.trim();
     const key = names.get(token(name));
-    if (!key) throw new Error(`Unknown key “${name}”. Choose a suggested key or use Advanced HID.`);
+    if (!key) throw new Error(`Unknown key “${name}”. Browse keys or use Advanced HID.`);
     if (!result.some(k => k.type === key.type && k.value === key.value)) result.push({ ...key });
   }
   if (result.length > 5) throw new Error('A combo can contain up to five keys, including modifiers.');

@@ -28,6 +28,8 @@ The mouse LED blinks when the profile switches.
 For a key you don't have on your keyboard, choose **Keyboard / combo**, type
 `F20`, and click **Set keys** (or press Enter). You can also record keys, choose
 a common shortcut, or enter decimal/hex codes under **Advanced HID**.
+If you prefer clicking, **Browse keys** groups keys by type and lets you search
+instead of scrolling through one long list.
 
 ## Status
 

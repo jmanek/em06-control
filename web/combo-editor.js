@@ -1,4 +1,5 @@
-import { KEYBOARD_KEYS, parseNamedCombo, parseHidUsage, keyboardKeyLabel, formatNamedCombo } from '../src/keyboard.js';
+import { parseNamedCombo, parseHidUsage, keyboardKeyLabel, formatNamedCombo } from '../src/keyboard.js';
+import { keyBrowser } from './key-browser.js';
 
 const drafts = new WeakMap();
 const element = (tag, className, text) => {
@@ -47,16 +48,14 @@ export function comboEditor({ item, index, label, presets, comboText, recording,
   input.title = 'Modifiers: Ctrl, Shift, Alt/Option, Cmd/Win/Meta.';
   input.value = draft.text; input.disabled = recording;
   input.oninput = () => { draft.text = input.value; error.hidden = true; };
-  const list = element('datalist'); list.id = `combo-keys-${index}`;
-  input.setAttribute('list', list.id);
-  for (const name of [...Array.from({ length: 24 }, (_, i) => `F${i + 1}`), ...KEYBOARD_KEYS.filter(k => !/^F\d+$/.test(k.name)).map(k => k.name)]) {
-    const option = element('option'); option.value = name; list.append(option);
-  }
   const set = button('Set keys'); set.type = 'submit'; set.disabled = recording;
   form.onsubmit = event => { event.preventDefault(); try { apply(parseNamedCombo(input.value)); } catch (e) { fail(e); } };
   const row = element('div', 'combo-named-row'); row.append(input, set);
-  form.append(fieldLabel, row, list, element('small', '', 'F1–F24, letters, arrows. Use + for combinations.'));
+  form.append(fieldLabel, row, element('small', '', 'F1–F24, letters, arrows. Use + for combinations.'));
   root.append(form, error);
+  root.append(keyBrowser({ id: index, disabled: recording, onPick: name => {
+    input.value = name; draft.text = name; error.hidden = true; input.focus();
+  } }));
   const alternatives = element('div', 'combo-alternatives');
   const record = button(recording ? 'Stop recording' : 'Record keys', onRecord);
   record.setAttribute('aria-pressed', String(recording));

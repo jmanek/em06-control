@@ -28,6 +28,25 @@ async (page) => {
     check(JSON.stringify(await exported()) === JSON.stringify(setup), 'Viewing raw records changed data');
   }
   await page.locator('#profileTabs button').nth(0).click();
+  check(await field().getAttribute('list') === null, 'Native all-key dropdown is still attached');
+  await page.locator('.key-browser summary').click();
+  check(await page.locator('.key-grid button').count() === 24, 'Browse should open to F1–F24');
+  check(!await page.locator('.key-search-empty').isVisible(), 'No-results message shown despite matching keys');
+  await page.getByRole('button', { name: 'Use F20', exact: true }).click();
+  check(await field().inputValue() === 'F20', 'Picking F20 did not fill the named field');
+  check(JSON.stringify(await keys()) === JSON.stringify(setup.profiles[0].shortcuts[6]), 'Browsing a key changed the saved combo before applying');
+  await page.locator('.key-browser summary').click();
+  await page.getByLabel('Find a keyboard key', { exact: true }).fill('left_arrow');
+  check(await page.locator('.key-grid button').count() === 1, 'Key search does not understand aliases');
+  await page.getByRole('button', { name: 'Use ArrowLeft', exact: true }).click();
+  await page.locator('.key-browser summary').click();
+  await page.getByRole('button', { name: 'Numpad', exact: true }).click();
+  check(await page.locator('.key-grid button').count() === 18, 'Numpad group lost keys');
+  await page.getByLabel('Find a keyboard key', { exact: true }).fill('not_a_real_key');
+  check(await page.locator('.key-grid button').count() === 0, 'Unknown search should not show unrelated results');
+  check(await page.locator('.key-search-empty').isVisible(), 'Missing no-results feedback');
+  await page.getByRole('button', { name: 'Function', exact: true }).click();
+  await page.getByRole('button', { name: 'Use F20', exact: true }).click();
   await field().fill('f20'); await field().press('Enter');
   check(JSON.stringify(await keys()) === '[{"type":1,"value":111}]', 'F20 not saved as HID 0x6F');
   check((await page.locator('#selectedSummary').textContent()).includes('F20'), 'F20 label missing');
@@ -84,6 +103,9 @@ async (page) => {
   await page.locator('.combo-advanced').evaluate(node => { node.open = false; });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: 'output/playwright/combo-desktop.png', fullPage: true });
+  await page.locator('.key-browser summary').click();
+  await page.screenshot({ path: 'output/playwright/key-browser-desktop.png', fullPage: true });
+  await page.locator('.key-browser summary').click();
   await page.locator('.combo-advanced summary').click();
   await page.screenshot({ path: 'output/playwright/combo-advanced.png', fullPage: true });
   await page.locator('.combo-advanced summary').click();
@@ -98,6 +120,8 @@ async (page) => {
   await page.screenshot({ path: 'output/playwright/combo-narrow.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   check(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), 'Combo causes phone-width overflow');
+  await page.locator('.key-browser summary').click();
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), 'Key browser causes phone-width overflow');
   await page.locator('.inspector').screenshot({ path: 'output/playwright/combo-phone.png' });
   return 'Combo regression passed';
 }
