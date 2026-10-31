@@ -14,6 +14,7 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 - Remap the mouse buttons using the same functions as the ProtoArc Hub.
 - Set common shortcuts such as Copy, Paste, Cut, and Screenshot.
 - Record custom key combinations.
+- Type keys by name, including F1–F24, or shortcuts such as Ctrl+Shift+F20.
 - Set a key to cycle through profiles: 1 → 2 → 3 → 4 → 1.
 - Read and assign existing macro slots.
 - Read the connected mouse firmware version and link to ProtoArc Hub for updates.
@@ -23,6 +24,10 @@ Choose Next profile to make a button advance through the four profiles. The
 profile-cycle helper assigns it to the same button across all four profiles.
 Buttons cannot select a specific profile on the tested firmware (v4.10).
 The mouse LED blinks when the profile switches.
+
+For a key you don't have on your keyboard, choose **Keyboard / combo**, type
+`F20`, and click **Set keys** (or press Enter). You can also record keys, choose
+a common shortcut, or enter decimal/hex codes under **Advanced HID**.
 
 ## Status
 

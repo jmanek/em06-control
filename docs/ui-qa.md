@@ -15,6 +15,10 @@ This browser test uses local drafts and never connects to a device.
 hardware activation, pending/error states, dirty-draft preservation, external
 profile changes, disconnects, and that activation sends no keymap writes.
 
+`scripts/combo-qa.js` checks named F20 entry, modifier aliases, individual key
+removal, strict name/HID validation, presets, recording, context changes,
+exported data, and desktop/narrow editor screenshots. It uses local drafts.
+
 After the automated check passes, visually inspect the screenshot at desktop width and, when layout changes are involved, repeat the browser check at a narrow width. The visual checklist is:
 
 - The mouse image and clickable key hotspots are the dominant interaction.

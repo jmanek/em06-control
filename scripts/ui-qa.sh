@@ -78,5 +78,15 @@ if ! printf '%s' "$SWITCH_QA" | rg -q '^"Direct-profile regression passed"$'; th
   echo "UI QA failed: direct-profile regression did not complete" >&2
   exit 1
 fi
+bash "$PWCLI" --session "$SESSION" resize 1440 1000
+if ! COMBO_QA=$(bash "$PWCLI" --session "$SESSION" run-code --filename scripts/combo-qa.js); then
+  printf '%s\n' "$COMBO_QA"
+  exit 1
+fi
+printf '%s\n' "$COMBO_QA" | tee output/playwright/combo-qa.txt
+if ! printf '%s' "$COMBO_QA" | rg -q '^"Combo regression passed"$'; then
+  echo "UI QA failed: combo regression did not complete" >&2
+  exit 1
+fi
 bash "$PWCLI" --session "$SESSION" close >/dev/null
 echo "UI QA passed. Review the screenshot path reported in output/playwright/desktop-screenshot.txt."
