@@ -20,7 +20,7 @@ bash "$PWCLI" --session "$SESSION" close >/dev/null 2>&1 || true
 bash "$PWCLI" --session "$SESSION" open http://127.0.0.1:4173/web/
 bash "$PWCLI" --session "$SESSION" resize 1440 1000
 
-METRICS=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const q=s=>document.querySelector(s);const r=e=>e?.getBoundingClientRect();const map=r(q('.mouse-map'));const image=r(q('.mouse-map img'));const sidebar=r(q('.sidebar'));const header=r(q('.side-head'));const from=r(q('#copySource'));const to=r(q('#copyTarget'));const copyButton=r(q('#copyProfile'));return {bodyOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,sidebarOverflow:header?.scrollWidth>header?.clientWidth,profileHeader:q('.side-head>span')?.textContent.trim(),mouseMapHeight:Math.round(map?.height||0),mouseImageHeight:Math.round(image?.height||0),cycleHeading:q('.cycle-panel h2')?.textContent.trim(),cycleNoteVisible:!!q('.cycle-note')&&getComputedStyle(q('.cycle-note')).display!=='none',sidebarWidth:Math.round(sidebar?.width||0),copyFieldsAligned:Math.abs((from?.getBoundingClientRect().top||0)-(to?.getBoundingClientRect().top||0))<1&&Math.abs((from?.getBoundingClientRect().height||0)-(to?.getBoundingClientRect().height||0))<1,copyButtonHeight:Math.round(copyButton?.getBoundingClientRect().height||0)}})())")
+METRICS=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const q=s=>document.querySelector(s);const r=e=>e?.getBoundingClientRect();const map=r(q('.mouse-map'));const image=r(q('.mouse-map img'));const sidebar=r(q('.sidebar'));const header=r(q('.side-head'));const from=r(q('#copySource'));const to=r(q('#copyTarget'));const copyButton=r(q('#copyProfile'));return {bodyOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,sidebarOverflow:header?.scrollWidth>header?.clientWidth,profileHeader:q('.side-head>span')?.textContent.trim(),mouseMapHeight:Math.round(map?.height||0),mouseImageHeight:Math.round(image?.height||0),cycleHeading:q('.cycle-panel h2')?.textContent.trim(),cycleNoteVisible:!!q('.cycle-note')&&getComputedStyle(q('.cycle-note')).display!=='none',sidebarWidth:Math.round(sidebar?.width||0),copyFieldsAligned:Math.abs((from?.top||0)-(to?.top||0))<1&&Math.abs((from?.height||0)-(to?.height||0))<1,copyButtonHeight:Math.round(copyButton?.height||0)}})())")
 printf '%s\n' "$METRICS" | tee output/playwright/desktop-metrics.json
 if printf '%s' "$METRICS" | rg -q 'copyFieldsAligned[^t]*false'; then
   echo "UI QA failed: duplicate-profile fields are not aligned" >&2
@@ -62,6 +62,13 @@ MOBILE=$(bash "$PWCLI" --session "$SESSION" eval "JSON.stringify((()=>{const q=s
 printf '%s\n' "$MOBILE" | tee output/playwright/mobile-metrics.json
 if printf '%s' "$MOBILE" | rg -q 'bodyOverflow[^,]*true|sidebarOverflow[^,]*true'; then
   echo "UI QA failed: narrow layout overflow detected" >&2
+  exit 1
+fi
+bash "$PWCLI" --session "$SESSION" resize 1440 1000
+ACTION_QA=$(bash "$PWCLI" --session "$SESSION" run-code --filename scripts/profile-action-qa.js)
+printf '%s\n' "$ACTION_QA" | tee output/playwright/profile-action-qa.txt
+if ! printf '%s' "$ACTION_QA" | rg -q '^"Profile-action regression passed"$'; then
+  echo "UI QA failed: profile-action regression did not complete" >&2
   exit 1
 fi
 bash "$PWCLI" --session "$SESSION" close >/dev/null
