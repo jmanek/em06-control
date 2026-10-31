@@ -217,6 +217,8 @@ export function em06KeyRecord(type, param) {
 }
 
 export function em06ProfileCycleKey(profile = 0) {
+  // Preserve the original helper's bytes for compatibility. Firmware v4.10
+  // cycles on type 9; this parameter is not a verified direct-profile target.
   return em06KeyRecord(EM06.keyFunction.profileSwitch, (normalizeProfile(profile) + 1) % PROFILE_COUNT);
 }
 

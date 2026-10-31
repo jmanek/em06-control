@@ -45,9 +45,29 @@ perform firmware writes; ProtoArc Hub remains the update authority.
 
 Key record encoding is `[type, parameter >> 8, parameter & 255, checksum]`,
 where the local checksum is `0x55 - sum(first three bytes)`. The Hub defines
-function type `9` as `ProfileSwitch`. The parameter is the target profile, so a
-cycle key is written per profile with targets `1`, `2`, `3`, and `0`.
+function type `9` as `ProfileSwitch`. On tested firmware v4.10, this action
+advances to the next profile rather than selecting the stored parameter.
+The editor therefore labels it **Next profile** and offers no target selector.
+Existing raw parameters are preserved when reading, importing, exporting, and
+writing a profile. The cycle helper retains its existing `1`, `2`, `3`, `0`
+parameter sequence for compatibility; those values do not establish direct
+selection support.
 The extra Button 7 is displayed at index 6 and stored at raw slot 11.
+
+### Profile-switch verification
+
+For [issue #1](https://github.com/jmanek/em06-control/issues/1), three mappings
+were written to Button 7 on Profile 3 and read back before a single physical
+press: `09 00 00 4c`, `09 01 00 4b`, and `09 00 01 4b`. Each press selected
+Profile 4. These tests distinguish cycling from the usual low-byte, high-byte,
+and one-based target interpretations. Original bytes and the active profile
+were restored and verified afterward.
+
+The app's complete write frames were also compared with the public Hub's key
+writer and matched byte for byte. This supports firmware cycling behavior for
+the tested encodings; it does not rule out an undocumented alternative.
+The sidebar's direct selection uses the separate `0x0f` host command, not a
+type-9 key record.
 
 The Hub writes flash in chunks of at most 10 bytes and waits for the matching
 input report before sending the next chunk. The simulator and WebHID transport

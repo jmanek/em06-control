@@ -4,6 +4,13 @@ Run `npm test`, `node --check web/app.js`, `git diff --check`, and `npm run ui:q
 
 `npm run ui:qa` starts a local static server, opens the app in a real browser, checks for page and sidebar overflow, verifies the profile header stays compact, verifies the mouse remains large, and saves a browser screenshot under `output/playwright/`.
 
+It also runs `scripts/profile-action-qa.js`: imports profile-switch mappings
+with legacy parameters, checks the Next profile editor and both mouse views,
+exports to verify that browsing did not change the data, and exercises new
+assignments and the cycle helper. It checks that the sidebar still lists all
+four direct-switch targets and that the LED blink cue is available in tooltips.
+This browser test uses local drafts and never connects to a device.
+
 After the automated check passes, visually inspect the screenshot at desktop width and, when layout changes are involved, repeat the browser check at a narrow width. The visual checklist is:
 
 - The mouse image and clickable key hotspots are the dominant interaction.

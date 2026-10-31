@@ -8,7 +8,7 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 
 - Read all four mouse profiles.
 - Write changes to any profile without changing which profile the mouse is using.
-- Switch directly to Profile 1, 2, 3, or 4.
+- Switch directly to Profile 1, 2, 3, or 4 from the sidebar.
 - Notice when the mouse changes profile and update the app automatically.
 - Remap the mouse buttons using the same functions as the ProtoArc Hub.
 - Set common shortcuts such as Copy, Paste, Cut, and Screenshot.
@@ -18,7 +18,10 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 - Read the connected mouse firmware version and link to ProtoArc Hub for updates.
 - Export and import versioned setup files with automatic migration for older formats.
 
-The profile-cycle helper can use any mouse button.
+Choose Next profile to make a button advance through the four profiles. The
+profile-cycle helper assigns it to the same button across all four profiles.
+Buttons cannot select a specific profile on the tested firmware (v4.10).
+The mouse LED blinks when the profile switches.
 
 ## Status
 
