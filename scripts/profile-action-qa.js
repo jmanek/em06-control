@@ -55,8 +55,8 @@ async (page) => {
   await page.locator('#setCycleAll').click();
   const cycled = await downloadSetup();
   check(cycled.profiles.every((p, i) => p.keys[5].type === 9 && p.keys[5].param === (i + 1) % 4), 'Cycle helper changed its established wire format');
-  check(await page.locator('#profileTarget option').count() === 4, 'Direct sidebar selection lost profiles');
-  check((await page.locator('#cycle').getAttribute('title')).includes('LED blinks'), 'Missing direct-switch LED tooltip');
+  check(await page.locator('#profileSwitches button').count() === 4, 'Direct sidebar selection lost profiles');
+  check((await page.getByRole('button', { name: 'Switch to Profile 1', exact: true }).getAttribute('title')).includes('LED blinks'), 'Missing direct-switch LED tooltip');
   await page.locator('#sideDpi').click();
   await inspect(8);
   await page.screenshot({ path: 'output/playwright/next-profile-desktop.png', fullPage: true });

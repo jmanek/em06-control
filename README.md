@@ -9,6 +9,7 @@ Use it here: [EM06 Control](https://jmanek.github.io/em06-control/web/)
 - Read all four mouse profiles.
 - Write changes to any profile without changing which profile the mouse is using.
 - Switch directly to Profile 1, 2, 3, or 4 from the sidebar.
+- Open the active mouse profile on connect, then edit and activate profiles independently.
 - Notice when the mouse changes profile and update the app automatically.
 - Remap the mouse buttons using the same functions as the ProtoArc Hub.
 - Set common shortcuts such as Copy, Paste, Cut, and Screenshot.

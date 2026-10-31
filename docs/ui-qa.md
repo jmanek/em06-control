@@ -11,6 +11,10 @@ assignments and the cycle helper. It checks that the sidebar still lists all
 four direct-switch targets and that the LED blink cue is available in tooltips.
 This browser test uses local drafts and never connects to a device.
 
+`scripts/profile-switch-qa.js` uses a fake HID transport to check one-click
+hardware activation, pending/error states, dirty-draft preservation, external
+profile changes, disconnects, and that activation sends no keymap writes.
+
 After the automated check passes, visually inspect the screenshot at desktop width and, when layout changes are involved, repeat the browser check at a narrow width. The visual checklist is:
 
 - The mouse image and clickable key hotspots are the dominant interaction.

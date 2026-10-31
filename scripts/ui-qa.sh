@@ -71,5 +71,12 @@ if ! printf '%s' "$ACTION_QA" | rg -q '^"Profile-action regression passed"$'; th
   echo "UI QA failed: profile-action regression did not complete" >&2
   exit 1
 fi
+bash "$PWCLI" --session "$SESSION" resize 1440 1000
+SWITCH_QA=$(bash "$PWCLI" --session "$SESSION" run-code --filename scripts/profile-switch-qa.js)
+printf '%s\n' "$SWITCH_QA" | tee output/playwright/profile-switch-qa.txt
+if ! printf '%s' "$SWITCH_QA" | rg -q '^"Direct-profile regression passed"$'; then
+  echo "UI QA failed: direct-profile regression did not complete" >&2
+  exit 1
+fi
 bash "$PWCLI" --session "$SESSION" close >/dev/null
 echo "UI QA passed. Review the screenshot path reported in output/playwright/desktop-screenshot.txt."
